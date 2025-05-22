@@ -1,0 +1,44 @@
+// ATmega328P Pin Definitions (Arduino Uno)
+#define SWITCH_LEFT  2  // PD2 (Digital Pin 2)
+#define SWITCH_RIGHT 3  // PD3 (Digital Pin 3)
+#define LED_LEFT     4  // PD4 (Digital Pin 4)
+#define LED_RIGHT    5  // PD5 (Digital Pin 5)
+
+// Simple debounce counter
+#define DEBOUNCE_COUNT 5
+
+void setup() {
+  // Configure switch pins with internal pullups
+  pinMode(SWITCH_LEFT, INPUT_PULLUP);
+  pinMode(SWITCH_RIGHT, INPUT_PULLUP);
+  
+  // Configure LED pins as outputs
+  pinMode(LED_LEFT, OUTPUT);
+  pinMode(LED_RIGHT, OUTPUT);
+  
+  // Initialize LEDs to OFF
+  digitalWrite(LED_LEFT, LOW);
+  digitalWrite(LED_RIGHT, LOW);
+}
+
+void loop() {
+  // Read switches with simple debouncing
+  bool leftPressed = debounceRead(SWITCH_LEFT);
+  bool rightPressed = debounceRead(SWITCH_RIGHT);
+  
+  // Control LEDs (active-low logic)
+  digitalWrite(LED_LEFT, !leftPressed);
+  digitalWrite(LED_RIGHT, !rightPressed);
+}
+
+// Simple debounce function without timers
+bool debounceRead(uint8_t pin) {
+  uint8_t count = 0;
+  for(uint8_t i = 0; i < DEBOUNCE_COUNT; i++) {
+    if(digitalRead(pin) == LOW) {  // Switch pressed (active-low)
+      count++;
+    }
+    delay(1);  // Very short delay between readings
+  }
+  return (count == DEBOUNCE_COUNT); // Only return true if consistently LOW
+}
